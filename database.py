@@ -90,7 +90,7 @@ def create_password(
 	password: str,
 ):
 	today:str = datetime.datetime.today().strftime("%d %b, %Y")
-	max_id_so_far = max_id()
+	max_id_so_far: int = max_id()
 
 	connection = sqlite3.connect("database.db")
 	cursor = connection.cursor()
@@ -101,7 +101,7 @@ def create_password(
 			f"insert into passwords (id, website, username, password, last_updated) values ({newid}, '{website}', '{username}','{password}', '{today}')"	
 		)
 
-def max_id():
+def max_id() -> int:
 	connection = sqlite3.connect("database.db")
 	cursor = connection.cursor()
 

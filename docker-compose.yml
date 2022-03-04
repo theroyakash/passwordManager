@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+
+  webservice:
+    build: .
+    ports: 
+      - 6969:8080
+    container_name: passwordManager
+    volumes:
+      - ./db:./db
+    depends_on:
+     - redis

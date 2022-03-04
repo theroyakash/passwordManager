@@ -36,6 +36,11 @@ def after_request(response):
 
 @app.route('/', methods=["GET"])
 def index():
+    return render_template("base.html")
+
+
+@app.route('/vault', methods=["GET"])
+def vault():
 	results = database.get_all_passwords()
 	total_entries = len(results)
 	return render_template('index.html', 
