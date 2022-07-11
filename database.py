@@ -1,11 +1,15 @@
 import sqlite3
 from typing import Optional
 import datetime
+import os
+from rich.console import Console
+
+HERE = os.getcwd()
 
 """
 Database Schema:
 CREATE TABLE "passwords" (
-	"id"	INTEGER NOT NULL,
+	"id"	INTEGER NOT NULL AUTOINCREMENT,
 	"website"	TEXT NOT NULL,
 	"username"	TEXT NOT NULL,
 	"password"	TEXT,
@@ -14,112 +18,119 @@ CREATE TABLE "passwords" (
 );
 """
 
-def get_all_passwords():
-	connection = sqlite3.connect("database.db")
-	cursor = connection.cursor()
 
-	with connection:
-		cursor.execute(
-                "SELECT * FROM passwords"
+def create_database_if_not_exists():
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
+
+    with connection:
+        cursor.execute(
+            """
+        CREATE TABLE if not exists "passwords" (
+            "id"	INTEGER NOT NULL,
+            "website"	TEXT NOT NULL,
+            "username"	TEXT NOT NULL,
+            "password"	TEXT,
+            "last_updated"	TEXT,
+            "userid" INTEGER,
+            PRIMARY KEY("id")
+        );
+        """
         )
 
-	fetched_data = cursor.fetchall()
 
-	return fetched_data
+def get_all_passwords():
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
+
+    with connection:
+        cursor.execute("SELECT * FROM passwords")
+
+    fetched_data = cursor.fetchall()
+
+    return fetched_data
+
 
 def update_password(id: int, password: str):
-	connection = sqlite3.connect("database.db")
-	cursor = connection.cursor()
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
 
-	with connection:
-		cursor.execute(
-			f"UPDATE passwords SET password = '{password}' where id = {id}"
-		)
-	
-	fetched_data = cursor.fetchall()
+    today: str = datetime.datetime.now().strftime("%Y-%m-%d")
 
-	return fetched_data
+    with connection:
+        cursor.execute(f'UPDATE passwords SET password = "{password}" where id = {id}')
+        cursor.execute(f'UPDATE passwords SET last_updated ="{today}" where id = {id}')
+
+    fetched_data = cursor.fetchall()
+
+    return fetched_data
+
 
 def search_password(website: Optional[str], username: Optional[str]):
-	connection = sqlite3.connect("database.db")
-	cursor = connection.cursor()
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
 
-	with connection:
-		if website and not username:
-			cursor.execute(
-				f"SELECT * FROM passwords WHERE website LIKE '%{website}%'"
-			)
-		if not website and username:
-			cursor.execute(
-				f"SELECT * FROM passwords WHERE username LIKE '%{username}%'"
-			)
-		if website and username:
-			cursor.execute(
-				f"SELECT * FROM passwords WHERE username LIKE '%{username}%' OR '%{website}%'"
-			)
+    with connection:
+        if website and not username:
+            cursor.execute(f"SELECT * FROM passwords WHERE website LIKE '%{website}%'")
+        if not website and username:
+            cursor.execute(
+                f"SELECT * FROM passwords WHERE username LIKE '%{username}%'"
+            )
+        if website and username:
+            cursor.execute(
+                f"SELECT * FROM passwords WHERE username LIKE '%{username}%' OR '%{website}%'"
+            )
 
-	fetched_data = cursor.fetchall()
+    fetched_data = cursor.fetchall()
 
-	return fetched_data
+    return fetched_data
+
 
 def get_password_from_id(id: int):
-	connection = sqlite3.connect("database.db")
-	cursor = connection.cursor()
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
 
-	with connection:
-		cursor.execute(
-			f"select * from passwords where id = {id}"
-		)
-	
-	fetched_data = cursor.fetchall()
+    with connection:
+        cursor.execute(f"select * from passwords where id = {id}")
 
-	return fetched_data[0]
+    fetched_data = cursor.fetchall()
 
-def delete_by_id(id: int):
-	connection = sqlite3.connect("database.db")
-	cursor = connection.cursor()
+    return fetched_data[0]
 
-	with connection:
-		cursor.execute(
-			f"delete from passwords where id := id", {"id": id}
-		)
+
+def delete_by_id(unique_id: int):
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
+
+    with connection:
+        cursor.execute(f"delete from passwords where id={unique_id}")
+
 
 def create_password(
-	website: str,
-	username: str,
-	password: str,
+    website: str,
+    username: str,
+    password: str,
+    userid: int,
 ):
-	today:str = datetime.datetime.today().strftime("%d %b, %Y")
-	max_id_so_far: int = max_id()
+    today: str = datetime.datetime.today().strftime("%d %b, %Y")
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
 
-	connection = sqlite3.connect("database.db")
-	cursor = connection.cursor()
+    with connection:        
+        cursor.execute(
+            f"insert into passwords (website, username, password, last_updated, userid) values ('{website}', '{username}','{password}', '{today}', {userid})"
+        )
 
-	with connection:
-		newid = max_id_so_far + 1
-		cursor.execute(
-			f"insert into passwords (id, website, username, password, last_updated) values ({newid}, '{website}', '{username}','{password}', '{today}')"	
-		)
 
 def max_id() -> int:
-	connection = sqlite3.connect("database.db")
-	cursor = connection.cursor()
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
 
-	with connection:
-		cursor.execute("select max(id) from passwords")
+    with connection:
+        cursor.execute("select max(id) from passwords")
 
-	data = cursor.fetchall()
+    data = cursor.fetchall()
 
-	return data[0][0]
-	
+    return data[0][0]
 
-if __name__ == "__main__":
-	# result = get_all_passwords()
-	# print(result)
-
-	# update_password(1, "hola mami, wanna fuck?")
-
-	# result = get_all_passwords()
-	# print(result)
-
-	create_password("pornhub.com", "massiveBigDickWithSmallTits", "guywith 10 inch long dick")

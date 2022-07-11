@@ -1,4 +1,4 @@
-'''
+"""
 System Design Doc: https://jamboard.google.com/d/1gRt_IhHOYYFlhAi8ed4FPcVobvjb8b2_7gy-kfCb4i4/edit?usp=sharing
 
 Requirements:
@@ -17,7 +17,7 @@ CREATE TABLE "passwords" (
 	"last_updated"	TEXT,
 	PRIMARY KEY("id")
 );
-'''
+"""
 
 import database
 from flask import Flask, render_template, request
@@ -25,7 +25,8 @@ import vars
 
 app = Flask(__name__)
 
-WEBSITE_URL = 'http://127.0.0.1:6969/'
+WEBSITE_URL = "http://127.0.0.1:6969/"
+
 
 @app.after_request
 def after_request(response):
@@ -34,39 +35,44 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-@app.route('/', methods=["GET"])
+
+@app.route("/", methods=["GET"])
 def index():
     return render_template("base.html")
 
 
-@app.route('/vault', methods=["GET"])
+@app.route("/vault", methods=["GET"])
 def vault():
-	results = database.get_all_passwords()
-	total_entries = len(results)
-	return render_template('index.html', 
-						   user=vars.user_name, 
-						   total_entries=total_entries, 
-						   results=results)
+    results = database.get_all_passwords()
+    total_entries = len(results)
+    return render_template(
+        "index.html", user=vars.user_name, total_entries=total_entries, results=results
+    )
 
-@app.route('/results', methods=["GET", "POST"])
+
+@app.route("/results", methods=["GET", "POST"])
 def results():
-	# Search -> Redirects to results
-	pass
+    # Search -> Redirects to results
+    pass
 
-@app.route('/update/<id>', methods=['GET', 'POST'])
+
+@app.route("/update/<id>", methods=["GET", "POST"])
 def update(id):
-	if request.method == "GET":
-		selected_row = database.get_password_from_id(id)
-		return render_template("update_password.html", row=selected_row)
+    if request.method == "GET":
+        selected_row = database.get_password_from_id(id)
+        return render_template("update_password.html", row=selected_row)
 
 
-@app.route('/delete/<id>')
+@app.route("/delete/<id>")
 def delete(id):
-	pass
+    pass
 
-@app.route('/create')
+
+@app.route("/create")
 def create():
-	pass
+    pass
+
 
 if __name__ == "__main__":
+    database.create_database_if_not_exists()
     app.run(debug=True, host="0.0.0.0", port=6969)
