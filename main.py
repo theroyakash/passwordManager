@@ -20,12 +20,22 @@ CREATE TABLE "passwords" (
 """
 
 import database
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect
 import vars
+from flask_session import Session
+from tempfile import mkdtemp
+from loginrequired import login_required
 
 app = Flask(__name__)
 
 WEBSITE_URL = "http://127.0.0.1:6969/"
+PORT:int = 6969
+
+# Configure session to use filesystem (instead of signed cookies)
+app.config["SESSION_FILE_DIR"] = mkdtemp()
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
 
 
 @app.after_request
@@ -38,16 +48,44 @@ def after_request(response):
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("base.html")
+    if (session.get("username")):
+        return redirect('/vault')
 
+    return render_template("index.html")
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user = database.get_user(username)
+        
+        if user == []:
+            return f"<h1>User for Username: {username} Not found in the database</h1>"
+        
+        password_from_database = user[0][2]
+
+        if (password_from_database != password):
+            return f"<h1>Password Did not matched, please try login in <a href=\"/login\">here</a></h1>"
+        
+        if (password == password_from_database):
+            session["username"] = username    
+            return redirect('/vault')
+
+    else:
+        return render_template("login.html")
+
+@app.route("/signup", methods=["GET"])
+def signup():
+    return render_template("signup.html")
 
 @app.route("/vault", methods=["GET"])
+@login_required
 def vault():
-    results = database.get_all_passwords()
-    total_entries = len(results)
-    return render_template(
-        "index.html", user=vars.user_name, total_entries=total_entries, results=results
-    )
+    username:str = session.get('username')
+    return render_template("vault.html", username=username)
 
 
 @app.route("/results", methods=["GET", "POST"])
@@ -75,4 +113,5 @@ def create():
 
 if __name__ == "__main__":
     database.create_database_if_not_exists()
-    app.run(debug=True, host="0.0.0.0", port=6969)
+    database.create_user_table_if_not_exists()
+    app.run(debug=True, host="0.0.0.0", port=PORT)

@@ -27,13 +27,12 @@ def create_database_if_not_exists():
         cursor.execute(
             """
         CREATE TABLE if not exists "passwords" (
-            "id"	INTEGER NOT NULL,
+            "id"	INTEGER PRIMARY KEY AUTOINCREMENT,
             "website"	TEXT NOT NULL,
             "username"	TEXT NOT NULL,
             "password"	TEXT,
             "last_updated"	TEXT,
-            "userid" INTEGER,
-            PRIMARY KEY("id")
+            "userid" INTEGER
         );
         """
         )
@@ -134,3 +133,34 @@ def max_id() -> int:
 
     return data[0][0]
 
+
+def create_user_table_if_not_exists():
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
+
+    with connection:
+        cursor.execute("""create table if not exists users (
+            "id" INTEGER PRIMARY KEY AUTOINCREMENT,
+            "username"	TEXT NOT NULL,
+            "master_password" TEXT NOT NULL
+        )""")
+
+def create_user(username:str, master_password:str):
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
+
+    with connection:
+        cursor.execute(f"""
+        INSERT INTO users (username, master_password) values ('{username}', '{master_password}')
+        """)
+
+def get_user(username:str):
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
+
+    with connection:
+        cursor.execute(f"select * from users where username =\"{username}\"")
+
+    data = cursor.fetchall()
+
+    return data

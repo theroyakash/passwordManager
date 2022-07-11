@@ -1,87 +1,13 @@
-<!doctype html>
-<html lang="en">
-  <head>
-	  <!-- 
-	  Required Parameters:
-	  0. user: str
-	  1. total_entries: int
-	  2. name of the results = results <List<List>>
-	  like: results = 
-	  [
-	  	[<id>, <website>, <username>, <password>]
-	  ]
-	  -->
-    <meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	<style>
-		.center{
-			text-align:center;
-		}
-		table {
-		  font-family: arial, sans-serif;
-		  font-size: 1.25em;
-		  border-collapse: collapse;
-		  width: 100%;
-		}
-		
-		td, th {
-		  border: 1px solid #dddddd;
-		  text-align: left;
-		  padding: 8px;
-		}
-		
-		tr:nth-child(even) {
-		  background-color: #dddddd;
-		}
-  	</style>
-    <title>Password Manager</title>
-  </head>
-  <body class="center">
-	<h1>
-		Welcome {{user}}
-	</h1>
-	
-	  <form class="center" action="/results">
-      	<input type="search" placeholder="Search" aria-label="Search">
-      <button type="submit">Search</button>
-	  </form>
-
-	  
-	  <div style="padding-top: 20px;">
-	  	<button>Create New Password</button>
-	  </div>
-
-	  
-	  <div style="padding-top: 20px;">
-		  <table class="center">
-			  <tr>
-			    <th>Website</th>
-			    <th>User Name</th>
-			    <th>Password</th>
-				<th>Last Updated</th>
-				<th>Update Password</th>
-				<th>Delete Password</th>
-			  </tr>
-			  {% if total_entries==0 %}
-			  </table>
-			  	<p style="font-size: 2em">
-					You have no Passwords!
-				</p>
-			  {% else %}
-					{% for index in range(total_entries) %}
-						<tr>
-						    <td>{{results[index][1]}}</td>
-						    <td>{{results[index][2]}}</td>
-						    <td>{{results[index][3]}}</td>
-							<td>{{results[index][4]}}</td>
-							<td><a href='/update/{{results[index][0]}}'>Update</a></td>
-							<td><a href='/delete/{{results[index][0]}}'>Delete</a></td>
-						</tr>
-			  		{% endfor %}
-			  {% endif %}
-		  {% if total_entries!=0 %}
-		  </table>
-		  {% endif %}
-	  </div>
-  </body>
-</html>
+{% extends "base.html" %}
+{% block body %}
+<div class="card">
+    <h5 class="card-header">Flagship feature</h5>
+    <div class="card-body">
+        <h5 class="card-title">Secure way to remember passwords</h5>
+        <p class="card-text">Securely store, manage your passwords, credit card info, on your local machine and deploy
+            on your own server.</p>
+        <a href="/signup" class="btn btn-primary">Sign Up</a>
+        <a href="/login" class="btn btn-success">Log In</a>
+    </div>
+</div>
+{% endblock %}

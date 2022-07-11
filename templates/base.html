@@ -7,7 +7,7 @@
   <meta name="description" content="">
   <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
   <meta name="generator" content="Hugo 0.84.0">
-  <title>Cover Template · Bootstrap v5.0</title>
+  <title>Password Manager</title>
 
   <!-- Bootstrap core CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -45,15 +45,7 @@
         </a>
       </header>
 
-      <div class="card">
-        <h5 class="card-header">Flagship feature</h5>
-        <div class="card-body">
-          <h5 class="card-title">Secure way to remember passwords</h5>
-          <p class="card-text">Securely store, manage your passwords, credit card info, on your local machine and deploy on your own server.</p>
-          <a href="/signin" class="btn btn-primary">Sign Up</a>
-          <a href="/signin" class="btn btn-success">Log In</a>
-        </div>
-      </div>
+      {% block body %}{% endblock %}
 
       <br><br>
       
@@ -62,20 +54,20 @@
           <div class="h-100 p-5 text-white bg-dark rounded-3">
             <h2>Strengthen your passwords with a password generator</h2>
             <p>Upgrade the security of your online accounts - create strong passwords that are completely random and impossible to guess.</p>
-            <a class="btn btn-danger" type="button">Generate a strong password</a>
+            <a class="btn btn-danger">Generate a strong password</a>
           </div>
         </div>
         <div class="col-md-6">
           <div class="p-5 bg-light border rounded-3">
             <h2>Take control of your data</h2>
-            <p>Your passwords to personal info will be stored in a secure enclave on your local computer or the server you want to deploy to.</p>
-            <a class="btn btn-primary" type="button">See how you can deploy</a>
+            <p>Your passwords to personal are stored in your local computer or the server you want to deploy to. Your passwords are not shared.</p>
+            <a class="btn btn-success">See how you can deploy</a>
           </div>
         </div>
       </div>
   
       <footer class="pt-3 mt-4 text-muted border-top">
-        &copy; theroyakash and Debmalya 2022-2030
+        &copy; theroyakash, at IIT Madras
       </footer>
     </div>
   </main>
