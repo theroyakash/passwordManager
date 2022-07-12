@@ -71,7 +71,8 @@ def login():
             return f"<h1>Password Did not matched, please try login in <a href=\"/login\">here</a></h1>"
         
         if (password == password_from_database):
-            session["username"] = username    
+            session["username"] = username
+            session["userid"] = user[0][0]
             return redirect('/vault')
 
     else:
@@ -85,7 +86,11 @@ def signup():
 @login_required
 def vault():
     username:str = session.get('username')
-    return render_template("vault.html", username=username)
+    currentlySignedUserID = session.get('userid')
+
+    passwords = database.get_all_passwords(currentlySignedUserID)
+
+    return render_template("vault.html", username=username, passwords=passwords)
 
 
 @app.route("/results", methods=["GET", "POST"])
@@ -106,9 +111,19 @@ def delete(id):
     pass
 
 
-@app.route("/create")
+@app.route("/create", methods=["POST"])
+@login_required
 def create():
-    pass
+    if request.method == "POST":
+        website = request.form.get("website")
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        userid = session.get('userid')
+
+        database.create_password(website, username, password, userid)
+
+        return redirect('/vault')
 
 
 if __name__ == "__main__":

@@ -2,6 +2,7 @@ import sqlite3
 from typing import Optional
 import datetime
 import os
+from webbrowser import get
 from rich.console import Console
 
 HERE = os.getcwd()
@@ -38,12 +39,12 @@ def create_database_if_not_exists():
         )
 
 
-def get_all_passwords():
+def get_all_passwords(currentlySignedUserID:int):
     connection = sqlite3.connect(f"{HERE}/db/database.db")
     cursor = connection.cursor()
 
     with connection:
-        cursor.execute("SELECT * FROM passwords")
+        cursor.execute(f"SELECT * FROM passwords where userid={currentlySignedUserID}")
 
     fetched_data = cursor.fetchall()
 
@@ -164,3 +165,7 @@ def get_user(username:str):
     data = cursor.fetchall()
 
     return data
+
+if __name__ == "__main__":
+    password = get_user("theroyakash")
+    print(password)

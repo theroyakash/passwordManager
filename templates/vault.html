@@ -1,4 +1,94 @@
 {% extends "base.html" %}
 {% block body %}
-<h1>Welcome {{username}}</h1>
+<main>
+    <div class="container p-10">
+        <h1>Welcome {{username}} 🗿</h1>
+
+        <br>
+        <h2>Your Passwords</h2>
+        <hr>
+
+        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+            data-bs-target="#addApassword">Create a new password</button>
+        <br>
+        <hr>
+
+        <div class="modal fade" id="addApassword" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">You are adding New Password</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="/create" method="post">
+                            <div class="mb-3">
+                                <label for="website" class="col-form-label">Website (in example.com format)</label>
+                                <input name="website" type="text" class="form-control" id="website">
+                            </div>
+                            <div class="mb-3">
+                                <label for="recipient-name" class="col-form-label">Username / Email ID used on that website</label>
+                                <input name="username" type="text" class="form-control" id="recipient-name">
+                            </div>
+                            <div class="mb-3">
+                                <label for="message-text" class="col-form-label">Password</label>
+                                <textarea class="form-control" id="password" name="password"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success">Add New password</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Website</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">View Password</th>
+                </tr>
+            </thead>
+            <tbody>
+                {%for password in passwords%}
+                <tr>
+                    <td><a href="https://www.{{password[1]}}">{{password[1]}}</td>
+                    <td>{{password[2]}}</td>
+                    <td><button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#mymodal{{password[0]}}">
+                            View Password</button>
+                        </button> <a class="btn btn-danger">Update Password</a></td>
+                </tr>
+
+                <div class="modal fade" id="mymodal{{password[0]}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-xl">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Your Password for {{password[1]}}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h4 class="text-primary">{{password[2]}}</h4>
+                                <p class="text-success">Your Password is <span
+                                        class="text-danger">{{password[3]}}</span></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</main>
+
 {% endblock %}
