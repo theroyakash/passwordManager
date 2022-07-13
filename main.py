@@ -78,9 +78,23 @@ def login():
     else:
         return render_template("login.html")
 
-@app.route("/signup", methods=["GET"])
+@app.route("/signup", methods=["GET", "POST"])
 def signup():
-    return render_template("signup.html")
+    if request.method == "POST":
+        username = request.form.get('username')
+        password = request.form.get('password')
+
+        user = database.get_user(username)
+
+        if user != []:
+            return f"<h1>User with the name {username} already exists please <a href=\"/login\">login instead</a><h1>"
+        else:
+            # means the user is new
+            database.create_local_user(username, password)
+            return f"<h1>User with the name {username} is created please <a href=\"/login\">login now</a><h1>"
+
+    else:
+        return render_template("signup.html")
 
 @app.route("/vault", methods=["GET"])
 @login_required
@@ -101,14 +115,17 @@ def results():
 
 @app.route("/update/<id>", methods=["GET", "POST"])
 def update(id):
-    if request.method == "GET":
-        selected_row = database.get_password_from_id(id)
-        return render_template("update_password.html", row=selected_row)
+    if request.method == "POST":
+        newWebsite = request.form.get('website')
+        newusername = request.form.get('username')
+        newPassword = request.form.get('password')
+        database.update_password(id, newWebsite, newusername, newPassword)
+        return redirect("/vault")
 
-
-@app.route("/delete/<id>")
-def delete(id):
-    pass
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
 
 
 @app.route("/create", methods=["POST"])

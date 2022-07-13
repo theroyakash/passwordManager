@@ -6,10 +6,11 @@
 
         <br>
         <h2>Your Passwords</h2>
+        <a href="/logout">Not seeing your accounts, log out and sign in with a different account.</a>
         <hr>
 
-        <button type="button" class="btn btn-success" data-bs-toggle="modal"
-            data-bs-target="#addApassword">Create a new password</button>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addApassword">Create a new
+            password</button>
         <br>
         <hr>
 
@@ -27,7 +28,8 @@
                                 <input name="website" type="text" class="form-control" id="website">
                             </div>
                             <div class="mb-3">
-                                <label for="recipient-name" class="col-form-label">Username / Email ID used on that website</label>
+                                <label for="recipient-name" class="col-form-label">Username / Email ID used on that
+                                    website</label>
                                 <input name="username" type="text" class="form-control" id="recipient-name">
                             </div>
                             <div class="mb-3">
@@ -51,6 +53,7 @@
                     <th scope="col">Website</th>
                     <th scope="col">Username</th>
                     <th scope="col">View Password</th>
+                    <th scope="col">Last updated</th>
                 </tr>
             </thead>
             <tbody>
@@ -61,8 +64,46 @@
                     <td><button type="button" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#mymodal{{password[0]}}">
                             View Password</button>
-                        </button> <a class="btn btn-danger">Update Password</a></td>
+                        </button> <button data-bs-toggle="modal" data-bs-target="#updatePassword{{password[0]}}"
+                            class="btn btn-danger">Update Password</button></td>
+
+                    <td>{{password[4]}}</td>
                 </tr>
+
+                <div class="modal fade" id="updatePassword{{password[0]}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">You are updating your password</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="/update/{{password[0]}}" method="post">
+                                    <div class="mb-3">
+                                        <label for="website" class="col-form-label">Website (in example.com
+                                            format)</label>
+                                        <input name="website" type="text" class="form-control" id="website" value="{{password[1]}}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="recipient-name" class="col-form-label">Username / Email ID used on
+                                            that website</label>
+                                        <input name="username" type="text" class="form-control" id="recipient-name" value="{{password[2]}}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="message-text" class="col-form-label">Password</label>
+                                        <input class="form-control" id="password" name="password" value="{{password[3]}}"></input>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="modal fade" id="mymodal{{password[0]}}" tabindex="-1" aria-labelledby="exampleModalLabel"
                     aria-hidden="true">

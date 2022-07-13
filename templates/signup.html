@@ -3,17 +3,18 @@
 
 <main>
     <div class="container p-10">
+        <h1>Create a local user profile along with a master password</h1>
         <form action="/signup" method="post">
             <div class="mb-3">
                 <label for="username" class="form-label">Username</label>
                 <input type="text" class="form-control" id="username" name="username" placeholder="Username"aria-describedby="help">
-                <div id="help" class="form-text">Usernames Must be unique.</div>
+                <div id="help" class="form-text">Your local usernames must be unique.</div>
             </div>
             <div class="mb-3">
-                <label for="exampleInputPassword1" class="form-label">Password</label>
-                <input name="password" type="password" class="form-control" id="exampleInputPassword1">
+                <label for="exampleInputPassword1" class="form-label">Master Password</label>
+                <input name="password" type="password" class="form-control" id="exampleInputPassword1" placeholder="Choose a really long Master Password"aria-describedby="help">
             </div>
-            <button type="submit" class="btn btn-success">Submit</button>
+            <button type="submit" class="btn btn-success">Create a local user profile</button>
         </form>
     </div>
 </main>

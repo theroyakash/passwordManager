@@ -51,14 +51,16 @@ def get_all_passwords(currentlySignedUserID:int):
     return fetched_data
 
 
-def update_password(id: int, password: str):
+def update_password(id: int, website:str, username: str, password: str):
     connection = sqlite3.connect(f"{HERE}/db/database.db")
     cursor = connection.cursor()
 
-    today: str = datetime.datetime.now().strftime("%Y-%m-%d")
+    today: str = datetime.datetime.today().strftime("%d %b, %Y")
 
     with connection:
+        cursor.execute(f'UPDATE passwords SET website = "{website}" where id = {id}')
         cursor.execute(f'UPDATE passwords SET password = "{password}" where id = {id}')
+        cursor.execute(f'UPDATE passwords SET username = "{username}" where id = {id}')
         cursor.execute(f'UPDATE passwords SET last_updated ="{today}" where id = {id}')
 
     fetched_data = cursor.fetchall()
@@ -165,6 +167,14 @@ def get_user(username:str):
     data = cursor.fetchall()
 
     return data
+
+def create_local_user(username:str, password:str):
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
+
+    with connection:
+        cursor.execute(f"insert into users(username, master_password) values ('{username}', '{password}')")
+
 
 if __name__ == "__main__":
     password = get_user("theroyakash")
