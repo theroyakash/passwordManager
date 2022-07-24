@@ -45,8 +45,7 @@ def get_all_passwords(currentlySignedUserID:int):
 
     with connection:
         cursor.execute(f"SELECT * FROM passwords where userid={currentlySignedUserID}")
-
-    fetched_data = cursor.fetchall()
+        fetched_data = cursor.fetchall()
 
     return fetched_data
 
@@ -63,6 +62,18 @@ def update_password(id: int, website:str, username: str, password: str):
         cursor.execute(f'UPDATE passwords SET username = "{username}" where id = {id}')
         cursor.execute(f'UPDATE passwords SET last_updated ="{today}" where id = {id}')
 
+    fetched_data = cursor.fetchall()
+
+    return fetched_data
+
+
+def search_password_using_website(website: str):
+    connection = sqlite3.connect(f"{HERE}/db/database.db")
+    cursor = connection.cursor()
+
+    with connection:
+        cursor.execute(f"SELECT * FROM passwords WHERE website LIKE '%{website}%'")
+    
     fetched_data = cursor.fetchall()
 
     return fetched_data
