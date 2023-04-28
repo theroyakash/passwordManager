@@ -26,19 +26,20 @@ from flask_session import Session
 from tempfile import mkdtemp
 from loginrequired import login_required
 
-app = Flask(__name__)
+flask_app = Flask(__name__)
 
 WEBSITE_URL = "http://127.0.0.1:6969/"
 PORT:int = 6969
 
 # Configure session to use filesystem (instead of signed cookies)
-app.config["SESSION_FILE_DIR"] = mkdtemp()
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-Session(app)
+flask_app.config["SESSION_FILE_DIR"] = mkdtemp()
+flask_app.config["SESSION_PERMANENT"] = False
+flask_app.config["SESSION_TYPE"] = "filesystem"
 
+sess = Session()
+sess.init_app(flask_app)
 
-@app.after_request
+@flask_app.after_request
 def after_request(response):
     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
     response.headers["Expires"] = 0
@@ -46,7 +47,7 @@ def after_request(response):
     return response
 
 
-@app.route("/", methods=["GET"])
+@flask_app.route("/", methods=["GET"])
 def index():
     if (session.get("username")):
         return redirect('/vault')
@@ -54,7 +55,7 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/login", methods=["GET", "POST"])
+@flask_app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -78,7 +79,7 @@ def login():
     else:
         return render_template("login.html")
 
-@app.route("/signup", methods=["GET", "POST"])
+@flask_app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
         username = request.form.get('username')
@@ -96,7 +97,7 @@ def signup():
     else:
         return render_template("signup.html")
 
-@app.route("/vault", methods=["GET"])
+@flask_app.route("/vault", methods=["GET"])
 @login_required
 def vault():
     username:str = session.get('username')
@@ -107,13 +108,13 @@ def vault():
     return render_template("vault.html", username=username, passwords=passwords)
 
 
-@app.route("/results", methods=["GET", "POST"])
+@flask_app.route("/results", methods=["GET", "POST"])
 def results():
     # Search -> Redirects to results
     pass
 
 
-@app.route("/update/<id>", methods=["GET", "POST"])
+@flask_app.route("/update/<id>", methods=["GET", "POST"])
 def update(id):
     if request.method == "POST":
         newWebsite = request.form.get('website')
@@ -122,13 +123,13 @@ def update(id):
         database.update_password(id, newWebsite, newusername, newPassword)
         return redirect("/vault")
 
-@app.route("/logout")
+@flask_app.route("/logout")
 def logout():
     session.clear()
     return redirect("/")
 
 
-@app.route("/create", methods=["POST"])
+@flask_app.route("/create", methods=["POST"])
 @login_required
 def create():
     if request.method == "POST":
@@ -146,4 +147,4 @@ def create():
 if __name__ == "__main__":
     database.create_database_if_not_exists()
     database.create_user_table_if_not_exists()
-    app.run(debug=True, host="0.0.0.0", port=PORT)
+    flask_app.run(debug=True, host="0.0.0.0", port=PORT)
